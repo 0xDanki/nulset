@@ -1,0 +1,22 @@
+# Node
+node_modules/
+pnpm-lock.yaml
+
+# Env
+.env
+.env.*
+
+# Editor
+.cursor/
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs / cache
+*.log
+.cache/
+
+
