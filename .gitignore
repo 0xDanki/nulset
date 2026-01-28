@@ -19,4 +19,11 @@ Thumbs.db
 *.log
 .cache/
 
+# Noir build artifacts
+circuits/target/
+circuits/Prover.toml
+circuits/Verifier.toml
+circuits/*.json
 
+# TypeScript build
+scripts/dist/
