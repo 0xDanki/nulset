@@ -1,33 +1,45 @@
+import { execSync } from "child_process";
 import { existsSync } from "fs";
 
-// Wrapper for witness validation
-// In full implementation, this would verify a cryptographic proof
-// For demo: checks that witness file was successfully generated
+// Wrapper for proof verification using Barretenberg
+// Returns: true (proof valid) or false (proof invalid)
 
 export function verifyProof(proofName: string): boolean {
-  console.log("\n=== Verifying Witness ===\n");
+  console.log("\n=== Verifying Proof ===\n");
   
   // Step 1: Validate inputs
   if (!existsSync("../circuits/Nargo.toml")) {
     throw new Error("Circuit not found. Run from scripts/ directory.");
   }
   
-  const witnessPath = `../circuits/target/${proofName}.gz`;
-  if (!existsSync(witnessPath)) {
-    throw new Error(`Witness not found: ${witnessPath}. Run prove first.`);
+  const proofPath = `../circuits/target/proof`;
+  const vkPath = `../circuits/target/vk`;
+  
+  if (!existsSync(proofPath)) {
+    throw new Error(`Proof not found: ${proofPath}. Run prove first.`);
   }
   
-  console.log(`[Verifier] Witness: ${proofName}`);
-  console.log(`[Verifier] Checking witness file...\n`);
+  if (!existsSync(vkPath)) {
+    throw new Error(`Verification key not found: ${vkPath}. Run prove first.`);
+  }
   
-  // Step 2: Witness exists and was validated during execution
-  console.log("[Verifier] ✓ WITNESS VALID");
-  console.log("[Verifier] Circuit constraints satisfied");
-  console.log("[Verifier] Access: GRANTED\n");
-  console.log("Note: Full verification requires Barretenberg backend (bb)");
-  console.log("For demo: Witness validation proves Merkle path is correct");
+  console.log(`[Verifier] Proof: target/proof`);
+  console.log(`[Verifier] Verifying with Barretenberg...\n`);
   
-  return true;
+  // Step 2: Verify proof using bb
+  try {
+    const verifyCmd = `cd ../circuits && bb verify -p ./target/proof -k ./target/vk`;
+    execSync(verifyCmd, { stdio: "inherit" });
+    
+    console.log("\n[Verifier] ✓ PROOF VALID");
+    console.log("[Verifier] Access: GRANTED\n");
+    return true;
+    
+  } catch (err) {
+    console.log("\n[Verifier] ✗ PROOF INVALID");
+    console.log("[Verifier] Access: DENIED\n");
+    return false;
+  }
 }
 
 // CLI usage

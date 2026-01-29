@@ -21,12 +21,12 @@ export function witnessJsonToToml(witnessPath: string, outputPath: string): void
     throw new Error("Invalid witness JSON: missing required fields");
   }
   
-  if (!Array.isArray(json.siblings) || json.siblings.length !== 32) {
-    throw new Error(`Invalid witness JSON: siblings must be array of length 32, got ${json.siblings?.length}`);
+  if (!Array.isArray(json.siblings) || json.siblings.length !== 8) {
+    throw new Error(`Invalid witness JSON: siblings must be array of length 8, got ${json.siblings?.length}`);
   }
   
-  if (!Array.isArray(json.direction_bits) || json.direction_bits.length !== 32) {
-    throw new Error(`Invalid witness JSON: direction_bits must be array of length 32, got ${json.direction_bits?.length}`);
+  if (!Array.isArray(json.direction_bits) || json.direction_bits.length !== 8) {
+    throw new Error(`Invalid witness JSON: direction_bits must be array of length 8, got ${json.direction_bits?.length}`);
   }
   
   // Build TOML content
