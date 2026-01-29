@@ -7,7 +7,7 @@ import { SMTLite } from "./tree.js";
 async function main() {
   console.log("=== Generating Witness Files ===\n");
 
-  const tree = await SMTLite.create(8);
+  const tree = await SMTLite.create();
 
 // Rebuild tree with same banned identifiers
 const bannedIdentifiers = [
@@ -49,7 +49,7 @@ const witnessBadOutput = {
   console.log("[User] ✓ Bad witness saved to circuits/witness_bad.json");
 
   console.log("\n=== Witness Generation Complete ===");
-  console.log("Next: Convert witness JSON to Noir Prover.toml format");
+  console.log("Next: Generate ZK proofs with Circom (pnpm run demo)");
 }
 
 main().catch(err => {

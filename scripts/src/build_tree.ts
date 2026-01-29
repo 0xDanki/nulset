@@ -5,10 +5,10 @@ import { SMTLite } from "./tree.js";
 // Usage: tsx src/build_tree.ts
 
 async function main() {
-console.log("=== Building SMT-lite Exclusion Tree ===\n");
-console.log("Note: Using depth-8 for demo (production: depth-32 with recursion)\n");
+  console.log("=== Building SMT-lite Exclusion Tree ===\n");
+  console.log("Tree depth: 32 (4,294,967,296 possible identifiers)\n");
 
-const tree = await SMTLite.create(8);
+const tree = await SMTLite.create();
 
 // Add banned identifiers (hardcoded for demo)
 const bannedIdentifiers = [
