@@ -6,7 +6,12 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "demo": "tsx src/demo.ts"
+    "demo": "tsx src/demo.ts",
+    "sanity-check": "tsx src/sanity_check.ts",
+    "build-tree": "tsx src/build_tree.ts",
+    "gen-witness": "tsx src/gen_witness.ts",
+    "prove": "tsx src/prove.ts",
+    "verify": "tsx src/verify.ts"
   },
   "dependencies": {
     "@zk-kit/poseidon": "^1.0.0"

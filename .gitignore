@@ -24,6 +24,8 @@ circuits/target/
 circuits/Prover.toml
 circuits/Verifier.toml
 circuits/*.json
+circuits/*.gz
+circuits/proofs/
 
 # TypeScript build
 scripts/dist/

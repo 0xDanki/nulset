@@ -37,21 +37,43 @@ Proves "I am NOT in the banned set" without revealing identity:
 - `build_tree.ts` - Create exclusion set + compute root
 - `gen_witness.ts` - Generate witness files for sample users
 - `sanity_check.ts` - Verify hash compatibility
+- `toml_converter.ts` - Convert witness JSON → Prover.toml
+- `prove.ts` - Wrap nargo execute + prove
+- `verify.ts` - Wrap nargo verify, return pass/fail
+- `demo.ts` - Full end-to-end demo
 
 ## Commands
 
+### Full Demo (Automated)
 ```bash
-# Compile circuit
+cd scripts && pnpm run demo
+```
+
+### Step-by-Step
+
+```bash
+# 1. Compile circuit
 make check
 
-# Run tree builder
-cd scripts && tsx src/build_tree.ts
+# 2. Sanity check hash compatibility
+cd scripts && pnpm run sanity-check
 
-# Generate witnesses
-cd scripts && tsx src/gen_witness.ts
+# 3. Admin: Build exclusion tree
+cd scripts && pnpm run build-tree
 
-# Sanity check
-cd scripts && tsx src/sanity_check.ts
+# 4. User: Generate witnesses
+cd scripts && pnpm run gen-witness
+
+# 5. Platform: Generate proof for good user
+cd scripts && tsx src/prove.ts ../circuits/witness_good.json good_user
+
+# 6. Platform: Verify proof
+cd scripts && tsx src/verify.ts good_user
+# Expected: ✓ PROOF VALID, Access GRANTED
+
+# 7. Platform: Try to prove bad user (will fail)
+cd scripts && tsx src/prove.ts ../circuits/witness_bad.json bad_user
+# Expected: ✗ Circuit constraint fails (leaf_value must be 0)
 ```
 
 ## Demo Data
@@ -71,10 +93,19 @@ cd scripts && tsx src/sanity_check.ts
 - Noir: `dep::poseidon::bn254::hash_2`
 - TypeScript: `@zk-kit/poseidon`
 
+## Proof Workflow
+
+1. **Witness JSON** → TOML converter → **Prover.toml**
+2. `nargo execute` → generates witness file (`.gz`)
+3. `nargo prove` → generates proof artifact
+4. `nargo verify` → validates proof, returns pass/fail
+
+All steps are wrapped in `prove.ts` and `verify.ts` with clear logging.
+
 ## TODO (Production)
 
 - [ ] Larger tree depth / better identifier binding
 - [ ] Root distribution mechanism (IPFS/chain)
 - [ ] Witness refresh on root update
 - [ ] Multi-party admin (governance)
-- [ ] Real prove/verify integration (nargo/bb)
+- [ ] Production proving backend (parallelization, caching)
