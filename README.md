@@ -1,6 +1,28 @@
 # NulSet - Privacy-Preserving Exclusion Check
 
-A ZK proof system for non-membership verification using SMT-lite.
+> Prove "I'm NOT on the banned list" without revealing your identity.
+
+A zero-knowledge proof system for non-membership verification using sparse Merkle trees (SMT) with Poseidon hashing.
+
+## 🎯 What This Demo Proves
+
+✅ **Core Cryptography Works**
+- SMT-lite tree with depth-32 capacity (4B+ identifiers)
+- Poseidon (BN254) hash compatibility between TypeScript and Noir
+- Merkle proof verification in zero-knowledge circuit
+- Non-membership constraint enforcement (leaf = 0)
+
+✅ **Working End-to-End Flow**
+- Admin builds exclusion tree → computes root
+- User generates witness with Merkle path
+- Circuit validates: hash(leaf=0, siblings) = root
+- Good user passes ✓, Banned user fails ✗
+
+📝 **Production Roadmap**
+- Full ZK proof generation (requires compatible Barretenberg version)
+- Proof recursion for depth-32 (4× depth-8 sub-proofs)  
+- Root distribution mechanism (IPFS/on-chain)
+- Multi-party admin governance
 
 ## Quick Start
 
