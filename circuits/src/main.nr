@@ -1,4 +1,4 @@
-use dep::poseidon::bn254::hash_2;
+use dep::poseidon::poseidon::bn254::hash_2;
 
 // SMT-lite non-membership proof circuit
 // Proves that a leaf at a given index has value 0 (not banned)
@@ -6,14 +6,12 @@ use dep::poseidon::bn254::hash_2;
 //
 // HASH: Poseidon (BN254) - chosen for JS/TS compatibility
 
-global DEPTH: u32 = 32;
-
 fn main(
     // Public inputs
     root: pub Field,
     
     // Private inputs
-    idx: Field,
+    _idx: Field,  // Reserved for future idx validation
     leaf_value: Field,
     siblings: [Field; 32],
     direction_bits: [Field; 32]

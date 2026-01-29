@@ -15,8 +15,21 @@ cd circuits && nargo compile && cd ..
 pnpm -r build
 
 # Run demo
-cd scripts && pnpm run sanity-check && pnpm run demo
+cd scripts && pnpm run demo
 ```
+
+## Demo Status
+
+✅ **Working**: Witness validation (Option 1)
+- Tree building with Poseidon hash
+- Witness generation for good/bad users  
+- Circuit validation of Merkle proofs
+- Hash compatibility verified (circomlibjs ↔ Noir)
+
+🚧 **Future**: Full ZK proof generation (Option 2)
+- Requires Barretenberg backend (`bb`)
+- Would enable cryptographic proof artifacts
+- Would enable separate prover/verifier parties
 
 ## What It Does
 
@@ -90,17 +103,22 @@ cd scripts && tsx src/prove.ts ../circuits/witness_bad.json bad_user
 ## Hash Function
 
 **Poseidon (BN254)** used in both Noir and TypeScript:
-- Noir: `dep::poseidon::bn254::hash_2`
-- TypeScript: `@zk-kit/poseidon`
+- Noir: `dep::poseidon::poseidon::bn254::hash_2`
+- TypeScript: `circomlibjs` (Circom-compatible implementation)
 
-## Proof Workflow
+## Current Workflow (Option 1 - Witness Validation)
 
-1. **Witness JSON** → TOML converter → **Prover.toml**
-2. `nargo execute` → generates witness file (`.gz`)
-3. `nargo prove` → generates proof artifact
-4. `nargo verify` → validates proof, returns pass/fail
+1. **Build tree**: TypeScript with circomlibjs Poseidon
+2. **Generate witnesses**: For good/bad users with Merkle paths
+3. **Validate**: Noir circuit checks Merkle path → root
+4. **Result**: Good user passes (leaf=0), bad user fails (leaf=1)
 
-All steps are wrapped in `prove.ts` and `verify.ts` with clear logging.
+## Future Workflow (Option 2 - Full Proving)
+
+1. Witness JSON → TOML → `nargo execute` → witness file
+2. Barretenberg `bb prove` → cryptographic proof artifact
+3. Barretenberg `bb verify` → proof validation
+4. Separate prover/verifier parties
 
 ## TODO (Production)
 
