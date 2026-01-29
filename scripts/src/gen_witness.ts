@@ -4,9 +4,10 @@ import { SMTLite } from "./tree.js";
 // Generate witness files for good and bad users
 // Usage: tsx src/gen_witness.ts
 
-console.log("=== Generating Witness Files ===\n");
+async function main() {
+  console.log("=== Generating Witness Files ===\n");
 
-const tree = new SMTLite(32);
+  const tree = await SMTLite.create(32);
 
 // Rebuild tree with same banned identifiers
 const bannedIdentifiers = [
@@ -44,8 +45,14 @@ const witnessBadOutput = {
   ...witnessBad
 };
 
-writeFileSync("../circuits/witness_bad.json", JSON.stringify(witnessBadOutput, null, 2));
-console.log("[User] ✓ Bad witness saved to circuits/witness_bad.json");
+  writeFileSync("../circuits/witness_bad.json", JSON.stringify(witnessBadOutput, null, 2));
+  console.log("[User] ✓ Bad witness saved to circuits/witness_bad.json");
 
-console.log("\n=== Witness Generation Complete ===");
-console.log("Next: Convert witness JSON to Noir Prover.toml format");
+  console.log("\n=== Witness Generation Complete ===");
+  console.log("Next: Convert witness JSON to Noir Prover.toml format");
+}
+
+main().catch(err => {
+  console.error("Error:", err);
+  process.exit(1);
+});

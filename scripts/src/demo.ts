@@ -42,28 +42,28 @@ try {
   console.log("=".repeat(60));
   
   runStep(
-    "  → Generating proof for good user",
-    "tsx src/prove.ts ../circuits/witness_good.json good_user"
+    "  → Validating witness for good user",
+    "pnpm exec tsx src/prove.ts ../circuits/witness_good.json good_user"
   );
   
   runStep(
-    "  → Verifying proof for good user",
-    "tsx src/verify.ts good_user"
+    "  → Verifying witness for good user",
+    "pnpm exec tsx src/verify.ts good_user"
   );
   
-  // Step 4: Prove + Verify for BAD user (bob)
+  // Step 4: Attempt to validate BAD user (bob) - should fail
   console.log("\n" + "=".repeat(60));
   console.log("  STEP 4: Platform - Verify Bad User (bob@banned.com)");
   console.log("=".repeat(60));
   
-  console.log("\n[Demo] Attempting to prove bad user (should fail at circuit level)...");
+  console.log("\n[Demo] Attempting to validate bad user witness (should fail)...");
   
   try {
-    execSync("tsx src/prove.ts ../circuits/witness_bad.json bad_user", { stdio: "inherit" });
-    console.log("\n[Demo] ⚠️  WARNING: Bad user proof succeeded (unexpected!)");
+    execSync("pnpm exec tsx src/prove.ts ../circuits/witness_bad.json bad_user", { stdio: "inherit" });
+    console.log("\n[Demo] ⚠️  WARNING: Bad user validation succeeded (unexpected!)");
     console.log("[Demo] This means leaf_value was not 1 as expected.");
   } catch (err) {
-    console.log("\n[Demo] ✓ Bad user proof REJECTED by circuit (as expected)");
+    console.log("\n[Demo] ✓ Bad user REJECTED by circuit (as expected)");
     console.log("[Demo] Circuit correctly enforced leaf_value == 0 constraint");
     console.log("[Demo] Access: DENIED\n");
   }
@@ -75,16 +75,22 @@ try {
   console.log(`
 ✓ Good user (alice@example.com):
   - Leaf value = 0 (not banned)
-  - Proof generated ✓
-  - Proof verified ✓
+  - Witness generated ✓
+  - Circuit validation passed ✓
   - Access: GRANTED
 
 ✓ Bad user (bob@banned.com):
   - Leaf value = 1 (banned)
-  - Proof generation FAILED ✓ (circuit constraint)
+  - Circuit validation FAILED ✓ (enforced leaf_value == 0)
   - Access: DENIED
 
-NulSet successfully prevents banned users from generating valid proofs!
+NulSet successfully prevents banned users from passing validation!
+
+Note: This demo shows witness validation. Full ZK proof generation
+requires Barretenberg backend (bb). The core concept is proven:
+- Merkle tree correctly built
+- Witnesses correctly generated
+- Circuit correctly validates non-membership
 `);
   
 } catch (err) {

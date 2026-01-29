@@ -4,9 +4,10 @@ import { SMTLite } from "./tree.js";
 // Build SMT-lite exclusion tree and export root
 // Usage: tsx src/build_tree.ts
 
-console.log("=== Building SMT-lite Exclusion Tree ===\n");
+async function main() {
+  console.log("=== Building SMT-lite Exclusion Tree ===\n");
 
-const tree = new SMTLite(32);
+  const tree = await SMTLite.create(32);
 
 // Add banned identifiers (hardcoded for demo)
 const bannedIdentifiers = [
@@ -29,7 +30,13 @@ const rootOutput = {
   bannedIndices: treeData.bannedIndices
 };
 
-writeFileSync("../circuits/root.json", JSON.stringify(rootOutput, null, 2));
-console.log("\n[Admin] ✓ Root saved to circuits/root.json");
-console.log(`[Admin] Root: ${treeData.root}`);
-console.log(`[Admin] Banned count: ${treeData.bannedIndices.length}`);
+  writeFileSync("../circuits/root.json", JSON.stringify(rootOutput, null, 2));
+  console.log("\n[Admin] ✓ Root saved to circuits/root.json");
+  console.log(`[Admin] Root: ${treeData.root}`);
+  console.log(`[Admin] Banned count: ${treeData.bannedIndices.length}`);
+}
+
+main().catch(err => {
+  console.error("Error:", err);
+  process.exit(1);
+});

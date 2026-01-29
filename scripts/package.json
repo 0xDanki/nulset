@@ -14,7 +14,7 @@
     "verify": "tsx src/verify.ts"
   },
   "dependencies": {
-    "@zk-kit/poseidon": "^1.0.0"
+    "circomlibjs": "^0.1.7"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

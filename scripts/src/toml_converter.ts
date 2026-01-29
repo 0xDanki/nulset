@@ -37,7 +37,7 @@ export function witnessJsonToToml(witnessPath: string, outputPath: string): void
   tomlLines.push(`# Auto-generated from witness JSON\n`);
   
   tomlLines.push(`root = "${json.root}"`);
-  tomlLines.push(`idx = "${json.idx}"`);
+  tomlLines.push(`_idx = "${json.idx}"`);  // Note: circuit param is _idx
   tomlLines.push(`leaf_value = "${json.leaf_value}"`);
   
   // Format arrays with proper TOML syntax
