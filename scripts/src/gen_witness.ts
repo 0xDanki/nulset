@@ -7,7 +7,7 @@ import { SMTLite } from "./tree.js";
 async function main() {
   console.log("=== Generating Witness Files ===\n");
 
-  const tree = await SMTLite.create(32);
+  const tree = await SMTLite.create(8);
 
 // Rebuild tree with same banned identifiers
 const bannedIdentifiers = [

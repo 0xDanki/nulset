@@ -1,13 +1,15 @@
 import { buildPoseidon } from "circomlibjs";
 
 // SMT-lite tree builder for non-membership proofs
-// Depth: 32, Leaf values: 0 (empty), 1 (banned)
+// Depth: 8 (reduced for proving feasibility)
+// Leaf values: 0 (empty), 1 (banned)
 // Hash: Poseidon (BN254) - MUST match Noir circuit
+// Note: Production would use depth-32 with proof recursion
 
 // Poseidon instance (initialized async)
 let poseidon: any = null;
 
-const TREE_DEPTH = 32;
+const TREE_DEPTH = 8;
 const LEAF_EMPTY = BigInt(0);
 const LEAF_BANNED = BigInt(1);
 

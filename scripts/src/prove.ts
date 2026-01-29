@@ -35,12 +35,21 @@ export function generateProof(witnessJsonPath: string, proofName: string): void 
     throw err;
   }
   
-  // Step 4: Witness validation (proof generation requires barretenberg backend)
-  console.log("\n[Prover] ✓ Witness validation complete");
-  console.log("\n=== Witness Generation Complete ===");
-  console.log(`Witness artifact: circuits/target/${proofName}.gz`);
-  console.log("\nNote: Full proof generation requires Barretenberg backend (bb)");
-  console.log("For demo: Witness validation proves circuit constraints are satisfied");
+  // Step 4: Generate proof using Barretenberg
+  console.log("\n[Prover] Generating proof with Barretenberg...");
+  console.log("[Prover] This may take a while for depth-32 tree...");
+  try {
+    const proveCmd = `cd ../circuits && bb prove -b ./target/verify_nonmembership.json -w ./target/${proofName}.gz --write_vk -o ./target`;
+    execSync(proveCmd, { stdio: "inherit" });
+    console.log(`[Prover] ✓ Proof generated successfully`);
+  } catch (err) {
+    console.error("[Prover] ✗ Proof generation failed");
+    throw err;
+  }
+  
+  console.log("\n=== Proof Generation Complete ===");
+  console.log(`Proof: circuits/target/proof`);
+  console.log(`Verification key: circuits/target/vk`);
 }
 
 // CLI usage
