@@ -1,39 +1,86 @@
 import { useState } from 'react'
+import TwitterConnect from '../../components/TwitterConnect'
+import { TwitterProof } from '../../lib/tlsnotary/types'
+import { verifyTwitterProof } from '../../lib/tlsnotary/verifier'
+import { generateNulSetProof, verifyNulSetProof } from '../../lib/nulset/wrapper'
+import { NulSetProof } from '../../lib/nulset/types'
 
 export default function PlatformDemo() {
-  const [identifier, setIdentifier] = useState('')
+  const [twitterProof, setTwitterProof] = useState<TwitterProof | null>(null)
+  const [nulsetProof, setNulSetProof] = useState<NulSetProof | null>(null)
   const [verifying, setVerifying] = useState(false)
   const [result, setResult] = useState<{ granted: boolean; message: string } | null>(null)
 
-  const handleLogin = async () => {
-    if (!identifier.trim()) {
-      alert('Please enter an identifier')
-      return
-    }
+  const handleTwitterProof = async (proof: TwitterProof) => {
+    console.log('Twitter proof received:', proof)
+    setTwitterProof(proof)
+    setResult(null)
+    
+    // Automatically start NulSet proof generation
+    await handleVerifyAccess(proof)
+  }
 
+  const handleVerifyAccess = async (proof: TwitterProof) => {
     setVerifying(true)
     setResult(null)
 
     try {
-      // TODO: Generate proof and verify
-      // For now, simulate verification
-      console.log('Verifying access for:', identifier)
+      // Step 1: Verify Twitter proof
+      console.log('Step 1: Verifying Twitter proof...')
+      const twitterValid = await verifyTwitterProof(proof)
       
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      if (!twitterValid.valid) {
+        setResult({
+          granted: false,
+          message: `Twitter verification failed: ${twitterValid.reason}`
+        })
+        return
+      }
+
+      const twitterId = twitterValid.twitterId!
+      console.log('Twitter ID verified:', twitterId)
+
+      // Step 2: Generate NulSet proof
+      console.log('Step 2: Generating NulSet proof...')
+      const mockRoot = '10492359701221030970494707424271293435609873369838429079570923130897022847987'
       
-      // Mock verification result
-      const isAllowed = !identifier.toLowerCase().includes('banned')
+      const nulsetProof = await generateNulSetProof(
+        twitterId,
+        mockRoot,
+        (progress) => console.log('NulSet progress:', progress)
+      )
+      
+      setNulSetProof(nulsetProof)
+
+      // Step 3: Verify NulSet proof
+      console.log('Step 3: Verifying NulSet proof...')
+      const nulsetValid = await verifyNulSetProof(nulsetProof)
+      
+      if (!nulsetValid) {
+        setResult({
+          granted: false,
+          message: 'NulSet proof verification failed. Access denied.'
+        })
+        return
+      }
+
+      // Both proofs valid
+      // Check if Twitter ID is in banned list (for demo)
+      const bannedIds = ['1234567890123456789', '9876543210987654321', '5555555555555555555']
+      const isBanned = bannedIds.includes(twitterId)
       
       setResult({
-        granted: isAllowed,
-        message: isAllowed 
-          ? 'Zero-knowledge proof verified. Access granted.' 
-          : 'Proof verification failed. Access denied.'
+        granted: !isBanned,
+        message: isBanned
+          ? 'Access denied: Twitter account is on the banned list.'
+          : 'Zero-knowledge proofs verified. Access granted!'
       })
+      
     } catch (err) {
+      console.error('Verification error:', err)
       setResult({
         granted: false,
-        message: `Error: ${err}`
+        message: `Verification error: ${err}`
       })
     } finally {
       setVerifying(false)
@@ -67,46 +114,56 @@ export default function PlatformDemo() {
         </div>
 
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Your Identifier (Email/Username)
-            </label>
-            <input
-              type="text"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="alice@example.com"
-              className="w-full input"
-              disabled={verifying}
+          {!twitterProof ? (
+            <TwitterConnect
+              onProofGenerated={handleTwitterProof}
+              onError={(err) => console.error('Twitter connection error:', err)}
             />
-          </div>
-
-          <button
-            onClick={handleLogin}
-            disabled={verifying || !identifier.trim()}
-            className="w-full btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed py-3 text-lg"
-          >
-            {verifying ? 'Verifying Access...' : 'Login with Zero-Knowledge Proof'}
-          </button>
+          ) : (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <p className="text-green-800 font-medium">Twitter Connected!</p>
+              <p className="text-green-700 text-sm mt-1">
+                Twitter ID: {twitterProof.twitterId}
+              </p>
+              <button
+                onClick={() => {
+                  setTwitterProof(null)
+                  setNulSetProof(null)
+                  setResult(null)
+                }}
+                className="mt-2 text-sm text-blue-600 hover:underline"
+              >
+                Connect different account
+              </button>
+            </div>
+          )}
         </div>
 
         {verifying && (
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-gray-700 mb-2">Generating proof...</p>
+            <p className="text-gray-700 mb-2">Verifying access...</p>
             <div className="space-y-2 text-sm text-gray-600">
               <div className="flex items-center">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"></div>
-                <span>Computing Merkle witness</span>
+                <span>Verifying Twitter proof (ZK-TLS)</span>
               </div>
               <div className="flex items-center">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"></div>
-                <span>Generating Groth16 proof (10-30s)</span>
+                <span>Generating NulSet proof (Groth16)</span>
               </div>
               <div className="flex items-center">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"></div>
-                <span>Verifying proof</span>
+                <span>Verifying exclusion proof</span>
               </div>
             </div>
+          </div>
+        )}
+
+        {nulsetProof && !result && (
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-blue-800 text-sm">
+              Both proofs generated. Verifying...
+            </p>
           </div>
         )}
 
@@ -167,26 +224,20 @@ export default function PlatformDemo() {
 
       {/* Test Data */}
       <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <h3 className="font-semibold text-yellow-900 mb-2">Test Data</h3>
-        <p className="text-sm text-yellow-800 mb-2">Try these identifiers:</p>
-        <ul className="text-sm space-y-1">
+        <h3 className="font-semibold text-yellow-900 mb-2">Test Twitter IDs</h3>
+        <p className="text-sm text-yellow-800 mb-2">For demo purposes:</p>
+        <ul className="text-sm space-y-1 text-gray-700">
           <li>
-            <button 
-              onClick={() => setIdentifier('alice@example.com')} 
-              className="text-blue-600 hover:underline"
-            >
-              alice@example.com
-            </button>
-            <span className="text-gray-600 ml-2">(Not banned - should grant access)</span>
+            <code className="bg-white px-2 py-1 rounded">8888888888888888888</code>
+            <span className="text-gray-600 ml-2">- Alice (Good user, should grant access)</span>
           </li>
           <li>
-            <button 
-              onClick={() => setIdentifier('bob@banned.com')} 
-              className="text-blue-600 hover:underline"
-            >
-              bob@banned.com
-            </button>
-            <span className="text-gray-600 ml-2">(Banned - should deny access)</span>
+            <code className="bg-white px-2 py-1 rounded">1234567890123456789</code>
+            <span className="text-gray-600 ml-2">- Bob (Banned, should deny access)</span>
+          </li>
+          <li className="mt-2 text-xs text-gray-600">
+            Note: Twitter connection button will use your configured test account's ID
+          </span>
           </li>
         </ul>
       </div>
