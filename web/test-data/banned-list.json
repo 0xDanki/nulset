@@ -1,0 +1,10 @@
+{
+  "banned": [
+    "bob@banned.com",
+    "eve@malicious.org",
+    "sanctioned@example.com",
+    "fraud@scammer.net",
+    "blocked@user.io",
+    "suspended@platform.com"
+  ]
+}
