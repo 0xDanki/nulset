@@ -43,6 +43,7 @@ circuits/root.json
 
 # TypeScript build
 scripts/dist/
+web/dist/
 
 # Dependencies
 node_modules/
@@ -50,3 +51,12 @@ circuits/node_modules/
 
 # Plonky2 backend (experimental, not used)
 acvm-backend-plonky2/
+
+# AI coding assistant files
+RULES.md
+DEMO.md
+COMMANDS.md
+context.md
+FRONTEND_RULES.md
+FRONTEND_CONTEXT.md
+makefile
