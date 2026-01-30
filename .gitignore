@@ -19,13 +19,34 @@ Thumbs.db
 *.log
 .cache/
 
-# Noir build artifacts
+# Circom generated files (keep setup files, ignore proof artifacts)
+circuits/compiled/*.r1cs
+circuits/compiled/*.sym
+circuits/compiled/*_js/
+
+# Proof artifacts (regenerated each time)
+circuits/compiled/input_*.json
+circuits/compiled/witness_*.wtns
+circuits/compiled/proof_*.json
+circuits/compiled/public_*.json
+
+# Keep these (one-time trusted setup):
+# circuits/compiled/*.ptau
+# circuits/compiled/*.zkey
+# circuits/compiled/verification_key.json
+
 circuits/target/
-circuits/Prover.toml
-circuits/Verifier.toml
-circuits/*.json
-circuits/*.gz
-circuits/proofs/
+
+# Witness files (contain private data)
+circuits/witness_*.json
+circuits/root.json
 
 # TypeScript build
 scripts/dist/
+
+# Dependencies
+node_modules/
+circuits/node_modules/
+
+# Plonky2 backend (experimental, not used)
+acvm-backend-plonky2/
