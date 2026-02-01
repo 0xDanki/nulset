@@ -5,7 +5,7 @@
     "5555555555555555555"
   ],
   "metadata": {
-    "description": "Demo banned list with fake Twitter IDs",
+    "description": "Demo banned list with fake IDs",
     "note": "These are placeholder IDs for initial testing. Replace with real IDs for actual demo.",
     "usage": "Upload this in Admin Panel to test the flow before using real accounts"
   }

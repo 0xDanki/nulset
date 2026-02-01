@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { generateNulSetProof, verifyNulSetProof } from '../../lib/nulset/wrapper'
 import { generateWitnessForId } from '../../lib/nulset/tree-browser'
 import { NulSetProof } from '../../lib/nulset/types'
+import { loadState } from '../../lib/nulset/state-manager'
 
 export default function PlatformDemo() {
   const [userId, setUserId] = useState('')
@@ -20,11 +21,23 @@ export default function PlatformDemo() {
     setNulSetProof(null)
 
     try {
-      console.log('Step 1: Generating Merkle witness for user ID:', userId)
+      console.log('Step 1: Loading admin-uploaded ban list...')
       
-      // Banned list (in production, this comes from admin panel)
-      const bannedIds = ['1234567890123456789', '9876543210987654321', '5555555555555555555']
-      const root = '10492359701221030970494707424271293435609873369838429079570923130897022847987'
+      // Load ban list from admin panel (localStorage)
+      const state = loadState()
+      if (!state) {
+        setResult({
+          granted: false,
+          message: 'No ban list configured. Please upload a ban list in the Admin panel first.'
+        })
+        return
+      }
+      
+      const bannedIds = state.bannedList
+      const root = state.root
+      
+      console.log('[Demo] Using admin ban list:', bannedIds.length, 'identifiers')
+      console.log('[Demo] Root:', root)
       
       const witness = await generateWitnessForId(userId, bannedIds, root)
       console.log('Witness generated:', witness)
@@ -207,24 +220,34 @@ export default function PlatformDemo() {
         </div>
       </div>
 
-      {/* Test Data */}
+      {/* Current Ban List Info */}
       <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <h3 className="font-semibold text-yellow-900 mb-2">Test IDs</h3>
-        <p className="text-sm text-yellow-800 mb-2">Try these for demo:</p>
-        <ul className="text-sm space-y-1 text-gray-700">
-          <li>
-            <code className="bg-white px-2 py-1 rounded">8888888888888888888</code>
-            <span className="text-gray-600 ml-2">- Good user (should be approved)</span>
-          </li>
-          <li>
-            <code className="bg-white px-2 py-1 rounded">1234567890123456789</code>
-            <span className="text-gray-600 ml-2">- Banned user (should be denied)</span>
-          </li>
-          <li>
-            <code className="bg-white px-2 py-1 rounded">your_email@example.com</code>
-            <span className="text-gray-600 ml-2">- Any string works (hashed to index)</span>
-          </li>
-        </ul>
+        <h3 className="font-semibold text-yellow-900 mb-2">Current Ban List</h3>
+        {(() => {
+          const state = loadState()
+          if (!state) {
+            return (
+              <p className="text-sm text-yellow-800">
+                ⚠️ No ban list loaded. Please upload one in the <a href="/admin" className="underline font-medium">Admin panel</a> first.
+              </p>
+            )
+          }
+          return (
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Using admin-uploaded ban list with <strong>{state.bannedList.length}</strong> identifiers
+              </p>
+              <details className="text-sm">
+                <summary className="cursor-pointer text-blue-600 hover:underline">View banned identifiers</summary>
+                <ul className="mt-2 max-h-40 overflow-y-auto bg-white p-2 rounded">
+                  {state.bannedList.map((id, idx) => (
+                    <li key={idx} className="py-1 text-gray-600 font-mono text-xs">{id}</li>
+                  ))}
+                </ul>
+              </details>
+            </>
+          )
+        })()}
       </div>
     </div>
   )

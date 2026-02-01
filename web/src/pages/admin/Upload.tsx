@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { buildTreeAndGetRoot } from '../../lib/nulset/tree-browser'
+import { saveState, loadState, clearState } from '../../lib/nulset/state-manager'
 
 export default function AdminUpload() {
   const [file, setFile] = useState<File | null>(null)
@@ -50,19 +52,24 @@ export default function AdminUpload() {
     setError('')
 
     try {
-      // TODO: Import and use the existing tree.ts logic
-      // For now, simulate tree building
-      console.log('Building tree with identifiers:', identifiers)
+      console.log('[Admin] Building tree with', identifiers.length, 'identifiers')
       
-      // Simulate delay
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Build tree using real SMT implementation
+      const computedRoot = await buildTreeAndGetRoot(identifiers)
+      setRoot(computedRoot)
       
-      // Mock root for now
-      const mockRoot = '10492359701221030970494707424271293435609873369838429079570923130897022847987'
-      setRoot(mockRoot)
+      // Save to localStorage for Demo page to use
+      saveState({
+        root: computedRoot,
+        bannedList: identifiers,
+        timestamp: Date.now(),
+        depth: 32
+      })
       
-      console.log('Tree built. Root:', mockRoot)
+      console.log('[Admin] Tree built. Root:', computedRoot)
+      console.log('[Admin] State saved to localStorage')
     } catch (err) {
+      console.error('[Admin] Build error:', err)
       setError(`Failed to build tree: ${err}`)
     } finally {
       setBuilding(false)
@@ -208,9 +215,26 @@ export default function AdminUpload() {
             Download root.json
           </button>
 
-          <p className="mt-4 text-sm text-gray-600">
-            Share this root with platforms that want to use this exclusion list.
-          </p>
+          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded text-sm">
+            <p className="text-green-800">
+              ✅ <strong>State saved!</strong> Faucet Demo page will use this ban list automatically.
+            </p>
+          </div>
+          
+          <button
+            onClick={() => {
+              if (confirm('Clear the current ban list and start fresh?')) {
+                clearState()
+                setRoot('')
+                setIdentifiers([])
+                setFile(null)
+                setError('')
+              }
+            }}
+            className="mt-3 text-sm text-red-600 hover:underline"
+          >
+            Clear and start fresh
+          </button>
         </div>
       )}
 

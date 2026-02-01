@@ -56,7 +56,7 @@ function Home() {
         Built with zero-knowledge proofs and sparse Merkle trees.
       </p>
       
-      <div className="grid md:grid-cols-3 gap-6 mt-12 max-w-5xl mx-auto">
+      <div className="grid md:grid-cols-2 gap-6 mt-12 max-w-4xl mx-auto">
         <Link to="/admin" className="card hover:shadow-lg transition-shadow">
           <div className="text-primary-600 text-4xl mb-4">🔐</div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">Administrator</h3>
