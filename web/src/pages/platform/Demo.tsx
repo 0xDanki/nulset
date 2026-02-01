@@ -1,58 +1,55 @@
 import { useState } from 'react'
-import TwitterConnect from '../../components/TwitterConnect'
-import { TwitterProof } from '../../lib/tlsnotary/types'
-import { verifyTwitterProof } from '../../lib/tlsnotary/verifier'
 import { generateNulSetProof, verifyNulSetProof } from '../../lib/nulset/wrapper'
+import { generateWitnessForId } from '../../lib/nulset/tree-browser'
 import { NulSetProof } from '../../lib/nulset/types'
 
 export default function PlatformDemo() {
-  const [twitterProof, setTwitterProof] = useState<TwitterProof | null>(null)
+  const [userId, setUserId] = useState('')
   const [nulsetProof, setNulSetProof] = useState<NulSetProof | null>(null)
   const [verifying, setVerifying] = useState(false)
   const [result, setResult] = useState<{ granted: boolean; message: string } | null>(null)
 
-  const handleTwitterProof = async (proof: TwitterProof) => {
-    console.log('Twitter proof received:', proof)
-    setTwitterProof(proof)
-    setResult(null)
-    
-    // Automatically start NulSet proof generation
-    await handleVerifyAccess(proof)
-  }
+  const handleVerifyAccess = async () => {
+    if (!userId.trim()) {
+      alert('Please enter a user ID')
+      return
+    }
 
-  const handleVerifyAccess = async (proof: TwitterProof) => {
     setVerifying(true)
     setResult(null)
+    setNulSetProof(null)
 
     try {
-      // Step 1: Verify Twitter proof
-      console.log('Step 1: Verifying Twitter proof...')
-      const twitterValid = await verifyTwitterProof(proof)
+      console.log('Step 1: Generating Merkle witness for user ID:', userId)
       
-      if (!twitterValid.valid) {
+      // Banned list (in production, this comes from admin panel)
+      const bannedIds = ['1234567890123456789', '9876543210987654321', '5555555555555555555']
+      const root = '10492359701221030970494707424271293435609873369838429079570923130897022847987'
+      
+      const witness = await generateWitnessForId(userId, bannedIds, root)
+      console.log('Witness generated:', witness)
+      
+      // Check leaf value (should be 0 for allowed users)
+      if (witness.leaf_value !== '0') {
         setResult({
           granted: false,
-          message: `Twitter verification failed: ${twitterValid.reason}`
+          message: 'Access denied: Your ID is on the banned list.'
         })
         return
       }
 
-      const twitterId = twitterValid.twitterId!
-      console.log('Twitter ID verified:', twitterId)
-
-      // Step 2: Generate NulSet proof
-      console.log('Step 2: Generating NulSet proof...')
-      const mockRoot = '10492359701221030970494707424271293435609873369838429079570923130897022847987'
+      console.log('Step 2: Generating NulSet proof (this may take 10-30s)...')
       
       const nulsetProof = await generateNulSetProof(
-        twitterId,
-        mockRoot,
+        userId,
+        root,
+        witness,
         (progress) => console.log('NulSet progress:', progress)
       )
       
       setNulSetProof(nulsetProof)
+      console.log('NulSet proof generated!')
 
-      // Step 3: Verify NulSet proof
       console.log('Step 3: Verifying NulSet proof...')
       const nulsetValid = await verifyNulSetProof(nulsetProof)
       
@@ -64,16 +61,11 @@ export default function PlatformDemo() {
         return
       }
 
-      // Both proofs valid
-      // Check if Twitter ID is in banned list (for demo)
-      const bannedIds = ['1234567890123456789', '9876543210987654321', '5555555555555555555']
-      const isBanned = bannedIds.includes(twitterId)
+      console.log('✅ All proofs verified!')
       
       setResult({
-        granted: !isBanned,
-        message: isBanned
-          ? 'Access denied: Twitter account is on the banned list.'
-          : 'Zero-knowledge proofs verified. Access granted!'
+        granted: true,
+        message: 'Zero-knowledge proof verified. Faucet claim approved!'
       })
       
     } catch (err) {
@@ -90,70 +82,57 @@ export default function PlatformDemo() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Platform Demo</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Faucet Demo</h1>
         <p className="text-gray-600">
-          Sample platform that uses NulSet for privacy-preserving access control
+          Anti-Sybil faucet gate using zero-knowledge proofs for privacy-preserving exclusion
         </p>
       </div>
 
-      {/* Platform Card */}
-      <div className="card border-2 border-primary-200 mb-6">
-        <div className="flex items-center mb-6">
-          <div className="text-5xl mr-4">🏢</div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">SecurePlatform</h2>
-            <p className="text-gray-600">Exclusive access for verified users</p>
-          </div>
-        </div>
-
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <p className="text-blue-800 text-sm">
-            <strong>How it works:</strong> Enter your identifier to generate a zero-knowledge proof. 
-            The platform will verify you're not on the banned list without learning your identity.
-          </p>
-        </div>
-
+      <div className="card">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Request Faucet Tokens</h2>
+        
         <div className="space-y-4">
-          {!twitterProof ? (
-            <TwitterConnect
-              onProofGenerated={handleTwitterProof}
-              onError={(err) => console.error('Twitter connection error:', err)}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Your User ID
+            </label>
+            <input
+              type="text"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              placeholder="e.g., 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+              className="w-full input"
+              disabled={verifying}
             />
-          ) : (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <p className="text-green-800 font-medium">Twitter Connected!</p>
-              <p className="text-green-700 text-sm mt-1">
-                Twitter ID: {twitterProof.twitterId}
-              </p>
-              <button
-                onClick={() => {
-                  setTwitterProof(null)
-                  setNulSetProof(null)
-                  setResult(null)
-                }}
-                className="mt-2 text-sm text-blue-600 hover:underline"
-              >
-                Connect different account
-              </button>
-            </div>
-          )}
+            <p className="text-xs text-gray-500 mt-1">
+              Enter any identifier (wallet address, email, numeric ID, etc.)
+            </p>
+          </div>
+
+          <button
+            onClick={handleVerifyAccess}
+            disabled={verifying || !userId.trim()}
+            className="w-full btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed py-3 text-lg"
+          >
+            {verifying ? 'Verifying...' : 'Claim Faucet Tokens'}
+          </button>
         </div>
 
         {verifying && (
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-gray-700 mb-2">Verifying access...</p>
+            <p className="text-gray-700 mb-2">Generating zero-knowledge proof...</p>
             <div className="space-y-2 text-sm text-gray-600">
               <div className="flex items-center">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"></div>
-                <span>Verifying Twitter proof (ZK-TLS)</span>
+                <span>Generating Merkle witness</span>
               </div>
               <div className="flex items-center">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"></div>
-                <span>Generating NulSet proof (Groth16)</span>
+                <span>Generating Groth16 proof (10-30s)</span>
               </div>
               <div className="flex items-center">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"></div>
-                <span>Verifying exclusion proof</span>
+                <span>Verifying proof</span>
               </div>
             </div>
           </div>
@@ -162,7 +141,7 @@ export default function PlatformDemo() {
         {nulsetProof && !result && (
           <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-blue-800 text-sm">
-              Both proofs generated. Verifying...
+              Proof generated. Verifying...
             </p>
           </div>
         )}
@@ -170,74 +149,80 @@ export default function PlatformDemo() {
         {result && (
           <div className={`mt-6 p-6 rounded-lg border-2 ${
             result.granted 
-              ? 'bg-green-50 border-green-500' 
-              : 'bg-red-50 border-red-500'
+              ? 'bg-green-50 border-green-300' 
+              : 'bg-red-50 border-red-300'
           }`}>
-            <div className="flex items-center mb-2">
-              <span className="text-4xl mr-3">
+            <div className="flex items-start">
+              <div className="text-4xl mr-4">
                 {result.granted ? '✅' : '❌'}
-              </span>
-              <h3 className={`text-xl font-bold ${
-                result.granted ? 'text-green-900' : 'text-red-900'
-              }`}>
-                {result.granted ? 'Access Granted' : 'Access Denied'}
-              </h3>
-            </div>
-            <p className={result.granted ? 'text-green-800' : 'text-red-800'}>
-              {result.message}
-            </p>
-
-            {result.granted && (
-              <div className="mt-4 p-4 bg-white rounded border border-green-200">
-                <p className="text-gray-700">
-                  <strong>Welcome!</strong> You now have access to SecurePlatform.
-                  Your identity remains private.
-                </p>
               </div>
-            )}
+              <div className="flex-1">
+                <h3 className={`text-xl font-bold mb-2 ${
+                  result.granted ? 'text-green-900' : 'text-red-900'
+                }`}>
+                  {result.granted ? 'Access Granted' : 'Access Denied'}
+                </h3>
+                <p className={result.granted ? 'text-green-800' : 'text-red-800'}>
+                  {result.message}
+                </p>
+                {result.granted && (
+                  <div className="mt-4 p-3 bg-white rounded border border-green-200">
+                    <p className="text-sm text-gray-700 font-medium">What happened:</p>
+                    <ul className="text-sm text-gray-600 mt-2 space-y-1">
+                      <li>✓ Generated Merkle witness for your ID</li>
+                      <li>✓ Created zero-knowledge proof (Groth16)</li>
+                      <li>✓ Verified proof cryptographically</li>
+                      <li>✓ Confirmed you're NOT on the banned list</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <button
+              onClick={() => {
+                setResult(null)
+                setNulSetProof(null)
+                setUserId('')
+              }}
+              className="mt-4 text-sm text-blue-600 hover:underline"
+            >
+              Try another ID
+            </button>
           </div>
         )}
       </div>
 
-      {/* Info Section */}
-      <div className="card bg-gray-50">
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">Privacy Guarantees</h3>
-        <ul className="space-y-2 text-gray-700">
-          <li className="flex items-start">
-            <span className="text-green-600 mr-2">✓</span>
-            <span>Platform learns ONLY: "proof valid" or "proof invalid"</span>
-          </li>
-          <li className="flex items-start">
-            <span className="text-green-600 mr-2">✓</span>
-            <span>Your identifier is never shared with the platform</span>
-          </li>
-          <li className="flex items-start">
-            <span className="text-green-600 mr-2">✓</span>
-            <span>Proof generation happens locally in your browser</span>
-          </li>
-          <li className="flex items-start">
-            <span className="text-green-600 mr-2">✓</span>
-            <span>No information about other banned users is revealed</span>
-          </li>
-        </ul>
+      {/* How it works */}
+      <div className="mt-8 p-6 bg-blue-50 rounded-lg">
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">How This Works</h3>
+        <div className="space-y-2 text-sm text-gray-700">
+          <p><strong>1. Admin Setup:</strong> Platform uploads list of banned IDs → builds Merkle tree</p>
+          <p><strong>2. User Request:</strong> You enter your ID → system generates witness (Merkle path)</p>
+          <p><strong>3. ZK Proof:</strong> System creates Groth16 proof showing you're NOT banned</p>
+          <p><strong>4. Verification:</strong> Proof verified cryptographically → access granted/denied</p>
+          <p className="mt-3 text-xs text-gray-600">
+            <strong>Privacy:</strong> The verifier only sees your proof + root. They don't see the ban list or your Merkle path.
+          </p>
+        </div>
       </div>
 
       {/* Test Data */}
       <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <h3 className="font-semibold text-yellow-900 mb-2">Test Twitter IDs</h3>
-        <p className="text-sm text-yellow-800 mb-2">For demo purposes:</p>
+        <h3 className="font-semibold text-yellow-900 mb-2">Test IDs</h3>
+        <p className="text-sm text-yellow-800 mb-2">Try these for demo:</p>
         <ul className="text-sm space-y-1 text-gray-700">
           <li>
             <code className="bg-white px-2 py-1 rounded">8888888888888888888</code>
-            <span className="text-gray-600 ml-2">- Alice (Good user, should grant access)</span>
+            <span className="text-gray-600 ml-2">- Good user (should be approved)</span>
           </li>
           <li>
             <code className="bg-white px-2 py-1 rounded">1234567890123456789</code>
-            <span className="text-gray-600 ml-2">- Bob (Banned, should deny access)</span>
+            <span className="text-gray-600 ml-2">- Banned user (should be denied)</span>
           </li>
-          <li className="mt-2 text-xs text-gray-600">
-            Note: Twitter connection button will use your configured test account's ID
-          </span>
+          <li>
+            <code className="bg-white px-2 py-1 rounded">your_email@example.com</code>
+            <span className="text-gray-600 ml-2">- Any string works (hashed to index)</span>
           </li>
         </ul>
       </div>

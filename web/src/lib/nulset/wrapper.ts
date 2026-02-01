@@ -8,9 +8,11 @@
  */
 
 import { NulSetProof, MerkleWitness, NulSetProofCallback } from './types'
+// @ts-ignore - snarkjs has type issues in some environments
+import * as snarkjs from 'snarkjs'
 
 /**
- * Generate NulSet exclusion proof for a Twitter ID
+ * Generate NulSet exclusion proof for a user identifier
  * 
  * This function:
  * 1. Generates witness using existing tree.ts logic
@@ -18,56 +20,67 @@ import { NulSetProof, MerkleWitness, NulSetProofCallback } from './types'
  * 3. Generates Groth16 proof using existing circuit
  * 4. Returns proof that can be verified
  * 
- * @param twitterId Twitter user ID (19 digits)
+ * @param userId User identifier (any string)
  * @param root Current Merkle root
+ * @param witnessData Pre-computed witness data (from tree.ts)
  * @param onProgress Progress callback
  * @returns NulSet proof
  */
 export async function generateNulSetProof(
-  twitterId: string,
+  userId: string,
   root: string,
+  witnessData?: MerkleWitness,
   onProgress?: NulSetProofCallback
 ): Promise<NulSetProof> {
   try {
-    // Step 1: Generate witness
+    // Step 1: Prepare witness input
     updateProgress(onProgress, {
       step: 'witness',
-      message: 'Generating Merkle witness...',
+      message: 'Preparing witness input...',
       progress: 10
     })
     
-    // TODO: Import and use existing tree.ts
-    // const tree = await SMTLite.create()
-    // tree.rebuildFromBannedList(bannedIds)
-    // const witness = tree.generateWitness(twitterId)
+    // Use provided witness or create a mock one for testing
+    // In production, this MUST come from real tree.ts
+    const witness = witnessData || {
+      idx: '0',
+      leaf_value: '0',
+      siblings: Array(32).fill('0'),
+      direction_bits: Array(32).fill('0')
+    }
     
-    // Step 2: Load circuit WASM
+    // Format input for Circom circuit
+    const input = {
+      root: root,
+      idx: witness.idx,
+      leaf_value: witness.leaf_value,
+      siblings: witness.siblings,
+      direction_bits: witness.direction_bits
+    }
+    
+    // Step 2: Load circuit WASM and zkey
     updateProgress(onProgress, {
       step: 'loading',
-      message: 'Loading circuit WASM...',
+      message: 'Loading circuit files...',
       progress: 30
     })
     
-    // TODO: Load existing circuit WASM from circuits/compiled/
-    // const wasm = await fetch('/circuits/verify_nonmembership_js/verify_nonmembership.wasm')
-    // const wasmBuffer = await wasm.arrayBuffer()
+    const wasmPath = '/circuits/verify_nonmembership_js/verify_nonmembership.wasm'
+    const zkeyPath = '/circuits/verify_nonmembership_0000.zkey'
     
-    // Step 3: Generate proof
+    // Step 3: Generate proof using snarkjs
     updateProgress(onProgress, {
       step: 'proving',
       message: 'Generating Groth16 proof (10-30s)...',
       progress: 50
     })
     
-    // TODO: Use snarkjs to generate proof with existing circuit
-    // const { proof, publicSignals } = await snarkjs.groth16.fullProve(
-    //   witness,
-    //   wasmBuffer,
-    //   zkeyPath
-    // )
+    const { proof, publicSignals } = await snarkjs.groth16.fullProve(
+      input,
+      wasmPath,
+      zkeyPath
+    )
     
-    // TEMPORARY: Return structure for development
-    // This will be replaced with real proof generation
     updateProgress(onProgress, {
       step: 'complete',
       message: 'Proof generated successfully!',
@@ -75,12 +88,8 @@ export async function generateNulSetProof(
     })
     
     return {
-      proof: {
-        pi_a: ['TODO_A1', 'TODO_A2', 'TODO_A3'],
-        pi_b: [['TODO_B1', 'TODO_B2'], ['TODO_B3', 'TODO_B4'], ['TODO_B5', 'TODO_B6']],
-        pi_c: ['TODO_C1', 'TODO_C2', 'TODO_C3']
-      },
-      publicSignals: [root]
+      proof: proof,
+      publicSignals: publicSignals
     }
     
   } catch (error) {
@@ -98,23 +107,26 @@ export async function verifyNulSetProof(
   proof: NulSetProof
 ): Promise<boolean> {
   try {
-    // TODO: Load verification key
-    // const vkey = await fetch('/circuits/verification_key.json').then(r => r.json())
+    console.log('[NulSet Verifier] Loading verification key...')
     
-    // TODO: Verify with snarkjs
-    // const valid = await snarkjs.groth16.verify(
-    //   vkey,
-    //   proof.publicSignals,
-    //   proof.proof
-    // )
+    // Load verification key
+    const vkeyResponse = await fetch('/circuits/verification_key.json')
+    if (!vkeyResponse.ok) {
+      throw new Error('Failed to load verification key')
+    }
+    const vkey = await vkeyResponse.json()
     
-    // TEMPORARY: Basic validation
-    console.log('[NulSet Verifier] TODO: Implement real verification')
+    console.log('[NulSet Verifier] Verifying proof...')
     
-    const hasProof = proof.proof && proof.proof.pi_a && proof.proof.pi_b && proof.proof.pi_c
-    const hasSignals = proof.publicSignals && proof.publicSignals.length > 0
+    // Verify with snarkjs
+    const valid = await snarkjs.groth16.verify(
+      vkey,
+      proof.publicSignals,
+      proof.proof
+    )
     
-    return hasProof && hasSignals
+    console.log('[NulSet Verifier] Proof valid:', valid)
+    return valid
     
   } catch (error) {
     console.error('NulSet proof verification failed:', error)

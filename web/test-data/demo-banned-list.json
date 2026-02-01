@@ -1,0 +1,12 @@
+{
+  "banned": [
+    "1234567890123456789",
+    "9876543210987654321",
+    "5555555555555555555"
+  ],
+  "metadata": {
+    "description": "Demo banned list with fake Twitter IDs",
+    "note": "These are placeholder IDs for initial testing. Replace with real IDs for actual demo.",
+    "usage": "Upload this in Admin Panel to test the flow before using real accounts"
+  }
+}

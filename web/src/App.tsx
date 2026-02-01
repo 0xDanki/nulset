@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import AdminUpload from './pages/admin/Upload'
 import PlatformDemo from './pages/platform/Demo'
-import UserProve from './pages/user/Prove'
 
 function App() {
   return (
@@ -26,13 +25,7 @@ function App() {
                     to="/platform" 
                     className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
                   >
-                    Platform Demo
-                  </Link>
-                  <Link 
-                    to="/user" 
-                    className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
-                  >
-                    User Verification
+                    Faucet Demo
                   </Link>
                 </div>
               </div>
@@ -45,7 +38,6 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/admin" element={<AdminUpload />} />
             <Route path="/platform" element={<PlatformDemo />} />
-            <Route path="/user" element={<UserProve />} />
           </Routes>
         </main>
       </div>
@@ -74,18 +66,10 @@ function Home() {
         </Link>
 
         <Link to="/platform" className="card hover:shadow-lg transition-shadow">
-          <div className="text-primary-600 text-4xl mb-4">🏢</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Platform Demo</h3>
+          <div className="text-primary-600 text-4xl mb-4">💧</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">Faucet Demo</h3>
           <p className="text-gray-600">
-            Sample platform that verifies user proofs for access control
-          </p>
-        </Link>
-
-        <Link to="/user" className="card hover:shadow-lg transition-shadow">
-          <div className="text-primary-600 text-4xl mb-4">👤</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">User Verification</h3>
-          <p className="text-gray-600">
-            Generate zero-knowledge proof of non-membership locally
+            Anti-Sybil faucet gate using zero-knowledge exclusion proofs
           </p>
         </Link>
       </div>

@@ -18,15 +18,9 @@ Open http://localhost:3000
 
 ## Features
 
-### Phase 1 (Current)
-- Admin Panel: Upload CSV/JSON exclusion lists
-- Platform Demo: Sample platform with ZK verification
-- User Interface: Generate zero-knowledge proofs locally
-
-### Phase 2 (Planned)
-- Multi-admin support with authentication
-- Multiple platform integration
-- API for root distribution
+- **Admin Panel**: Upload CSV/JSON exclusion lists, build Merkle tree
+- **Faucet Demo**: Anti-Sybil gate using zero-knowledge exclusion proofs
+- **Client-side ZK**: All proof generation happens in browser (privacy-preserving)
 
 ## Architecture
 
@@ -39,8 +33,7 @@ Open http://localhost:3000
 
 - `/` - Home with overview
 - `/admin` - Administrator panel (upload lists, build trees)
-- `/platform` - Platform demo (verify users)
-- `/user` - User proof generation
+- `/platform` - Faucet demo (anti-Sybil verification)
 
 ## Development
 

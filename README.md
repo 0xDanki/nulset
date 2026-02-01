@@ -21,7 +21,15 @@ NulSet implements a zero-knowledge non-membership proof system based on sparse M
 
 ## Quick Start
 
-**Standard setup:**
+**Web Frontend (Faucet Demo):**
+```bash
+cd web
+pnpm install
+pnpm run dev
+# Open: http://localhost:3000
+```
+
+**Backend CLI Test:**
 ```bash
 # Install dependencies
 pnpm install

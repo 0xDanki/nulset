@@ -14,7 +14,10 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.0",
     "circomlibjs": "^0.1.7",
-    "snarkjs": "^0.7.6"
+    "snarkjs": "^0.7.6",
+    "buffer": "^6.0.3",
+    "stream-browserify": "^3.0.0",
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

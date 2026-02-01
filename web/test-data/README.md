@@ -1,36 +1,40 @@
 # Test Data
 
-Sample files for testing the NulSet admin interface.
-
 ## Files
 
-### `banned-list.json`
-JSON format with banned identifiers. Use this to test the admin upload feature.
+### `demo-banned-list.json`
+Sample banned identifiers for testing the faucet demo.
 
-### `banned-list.csv`
-CSV format with banned identifiers. Alternative format for testing.
+```json
+{
+  "banned": [
+    "1234567890123456789",
+    "9876543210987654321",
+    "5555555555555555555"
+  ]
+}
+```
 
-## Test Scenarios
-
-**Banned Users (should be denied access):**
-- bob@banned.com
-- eve@malicious.org
-- sanctioned@example.com
-- fraud@scammer.net
-- blocked@user.io
-- suspended@platform.com
-
-**Good Users (should be granted access):**
-- alice@example.com
-- charlie@good.com
-- david@user.io
-- grace@platform.com
-- Any identifier not in the banned list
+### `banned-list.json` / `banned-list.csv`
+Generic ban list examples showing different identifier formats.
 
 ## Usage
 
-1. Go to Admin panel (http://localhost:3000/admin)
-2. Upload `banned-list.json` or `banned-list.csv`
-3. Build the Merkle tree
-4. Download the root.json
-5. Test verification with both banned and good users in Platform Demo
+1. **Admin Panel**: Upload any JSON/CSV file
+2. **Build Tree**: System hashes identifiers and builds Merkle tree
+3. **Faucet Demo**: Enter any ID to test exclusion proof
+
+## Test IDs
+
+**Good (Not Banned)**:
+- `8888888888888888888` - Will be approved
+- `your@email.com` - Any string works
+- `0x742d35Cc...` - Wallet addresses supported
+
+**Banned (In demo-banned-list.json)**:
+- `1234567890123456789` - Will be denied
+- `9876543210987654321` - Will be denied
+
+## File Formats
+
+Both CSV and JSON supported. Examples in this directory.

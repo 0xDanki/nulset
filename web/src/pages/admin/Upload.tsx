@@ -92,10 +92,10 @@ export default function AdminUpload() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Administrator Panel</h1>
         <p className="text-gray-600">
-          Upload a list of banned Twitter user IDs to build a sparse Merkle tree exclusion set
+          Upload a list of banned user identifiers to build a sparse Merkle tree exclusion set
         </p>
         <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
-          <p><strong>Note:</strong> Upload Twitter user IDs (19-digit numbers), not email addresses. Users will prove ownership via ZK-TLS.</p>
+          <p><strong>Note:</strong> Upload any identifiers (wallet addresses, emails, numeric IDs). System hashes them for privacy.</p>
         </div>
       </div>
 
@@ -217,23 +217,23 @@ export default function AdminUpload() {
       {/* Format Help */}
       <div className="mt-8 p-4 bg-gray-50 rounded-lg text-sm text-gray-700">
         <h3 className="font-semibold mb-2">File Format</h3>
-        <p className="mb-2">CSV (Twitter IDs):</p>
+        <p className="mb-2">CSV:</p>
         <pre className="bg-white p-2 rounded mb-3">
 {`identifier
 1234567890123456789
-9876543210987654321`}
+0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb`}
         </pre>
-        <p className="mb-2">JSON (Twitter IDs):</p>
+        <p className="mb-2">JSON:</p>
         <pre className="bg-white p-2 rounded">
 {`{
   "banned": [
     "1234567890123456789",
-    "9876543210987654321"
+    "user@banned.com"
   ]
 }`}
         </pre>
         <p className="mt-3 text-xs text-gray-600">
-          <strong>Tip:</strong> Use test-data/banned-twitter-ids.json for demo
+          <strong>Tip:</strong> Use test-data/demo-banned-list.json for testing
         </p>
       </div>
     </div>
