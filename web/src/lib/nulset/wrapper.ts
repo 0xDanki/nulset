@@ -88,7 +88,9 @@ export async function generateNulSetProof(
     })
     
     return {
-      proof: proof,
+      pi_a: proof.pi_a,
+      pi_b: proof.pi_b,
+      pi_c: proof.pi_c,
       publicSignals: publicSignals
     }
     
@@ -122,7 +124,11 @@ export async function verifyNulSetProof(
     const valid = await snarkjs.groth16.verify(
       vkey,
       proof.publicSignals,
-      proof.proof
+      {
+        pi_a: proof.pi_a,
+        pi_b: proof.pi_b,
+        pi_c: proof.pi_c
+      }
     )
     
     console.log('[NulSet Verifier] Proof valid:', valid)

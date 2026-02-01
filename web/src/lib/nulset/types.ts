@@ -5,12 +5,10 @@
  */
 
 export interface NulSetProof {
-  // Groth16 proof components
-  proof: {
-    pi_a: string[]
-    pi_b: string[][]
-    pi_c: string[]
-  }
+  // Groth16 proof components (snarkjs format)
+  pi_a: string[]
+  pi_b: string[][]
+  pi_c: string[]
   
   // Public signals (merkle root)
   publicSignals: string[]

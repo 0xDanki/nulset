@@ -71,11 +71,11 @@ export function useFaucet() {
   
   // Format values
   const faucetBalance = rawFaucetBalance ? Number(formatUnits(rawFaucetBalance as bigint, 18)) : 0;
-  const totalClaims = userStats ? Number(userStats[0]) : 0;
-  const lastClaimTime = userStats ? Number(userStats[1]) : 0;
-  const canClaimNow = userStats ? Boolean(userStats[2]) : false;
-  const canClaim = cooldownData ? Boolean(cooldownData[0]) : false;
-  const cooldownRemaining = cooldownData ? Number(cooldownData[1]) : 0;
+  const totalClaims = userStats ? Number((userStats as any)[0]) : 0;
+  const lastClaimTime = userStats ? Number((userStats as any)[1]) : 0;
+  const canClaimNow = userStats ? Boolean((userStats as any)[2]) : false;
+  const canClaim = cooldownData ? Boolean((cooldownData as any)[0]) : false;
+  const cooldownRemaining = cooldownData ? Number((cooldownData as any)[1]) : 0;
   
   /**
    * Claim tokens with ZK proof
