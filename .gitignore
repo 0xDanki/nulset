@@ -65,3 +65,8 @@ makefile
 ONCHAIN_CONTEXT.md
 ONCHAIN_RULES.md
 ONCHAIN_PROGRESS.md
+
+# Documentation files (keep only README.md and QUICKSTART.md)
+/*.md
+!README.md
+!QUICKSTART.md
