@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { buildTreeAndGetRoot } from '../../lib/nulset/tree-browser'
-import { saveState, loadState, clearState } from '../../lib/nulset/state-manager'
+import { saveState, clearState } from '../../lib/nulset/state-manager'
 
 export default function AdminUpload() {
   const [file, setFile] = useState<File | null>(null)
