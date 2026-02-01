@@ -18,7 +18,12 @@
     "buffer": "^6.0.3",
     "stream-browserify": "^3.0.0",
     "util": "^0.12.5",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "@rainbow-me/rainbowkit": "^2.0.0",
+    "wagmi": "^2.5.0",
+    "viem": "^2.7.0",
+    "@tanstack/react-query": "^5.17.0",
+    "canvas-confetti": "^1.9.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
@@ -33,6 +38,7 @@
     "@typescript-eslint/parser": "^6.14.0",
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5"
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "@types/canvas-confetti": "^1.6.4"
   }
 }

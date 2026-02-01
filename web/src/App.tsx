@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import AdminUpload from './pages/admin/Upload'
 import PlatformDemo from './pages/platform/Demo'
+import Faucet from './pages/platform/Faucet'
 
 function App() {
   return (
@@ -25,7 +26,13 @@ function App() {
                     to="/platform" 
                     className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
                   >
-                    Faucet Demo
+                    Demo (Manual)
+                  </Link>
+                  <Link 
+                    to="/faucet" 
+                    className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
+                  >
+                    Faucet (Wallet)
                   </Link>
                 </div>
               </div>
@@ -38,6 +45,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/admin" element={<AdminUpload />} />
             <Route path="/platform" element={<PlatformDemo />} />
+            <Route path="/faucet" element={<Faucet />} />
           </Routes>
         </main>
       </div>
@@ -66,10 +74,18 @@ function Home() {
         </Link>
 
         <Link to="/platform" className="card hover:shadow-lg transition-shadow">
-          <div className="text-primary-600 text-4xl mb-4">💧</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Faucet Demo</h3>
+          <div className="text-primary-600 text-4xl mb-4">🧪</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">Demo (Manual)</h3>
           <p className="text-gray-600">
-            Anti-Sybil faucet gate using zero-knowledge exclusion proofs
+            Test with any identifier (address, email, ID, etc.)
+          </p>
+        </Link>
+
+        <Link to="/faucet" className="card hover:shadow-lg transition-shadow">
+          <div className="text-primary-600 text-4xl mb-4">💧</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">Faucet (Wallet)</h3>
+          <p className="text-gray-600">
+            Connect wallet and claim {5} $NUL tokens with ZK proof
           </p>
         </Link>
       </div>
