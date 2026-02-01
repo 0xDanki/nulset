@@ -27,7 +27,7 @@ import * as snarkjs from 'snarkjs'
  * @returns NulSet proof
  */
 export async function generateNulSetProof(
-  _userId: string,
+  userId: string,
   root: string,
   witnessData?: MerkleWitness,
   onProgress?: NulSetProofCallback
