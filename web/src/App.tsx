@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import AdminUpload from './pages/admin/Upload'
 import PlatformDemo from './pages/platform/Demo'
 import Faucet from './pages/platform/Faucet'
+import FaucetOnchain from './pages/platform/FaucetOnchain'
 
 function App() {
   return (
@@ -32,7 +33,13 @@ function App() {
                     to="/faucet" 
                     className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
                   >
-                    Faucet (Wallet)
+                    Faucet (Mock)
+                  </Link>
+                  <Link 
+                    to="/faucet-onchain" 
+                    className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
+                  >
+                    Faucet (On-Chain) ⭐
                   </Link>
                 </div>
               </div>
@@ -46,6 +53,7 @@ function App() {
             <Route path="/admin" element={<AdminUpload />} />
             <Route path="/platform" element={<PlatformDemo />} />
             <Route path="/faucet" element={<Faucet />} />
+            <Route path="/faucet-onchain" element={<FaucetOnchain />} />
           </Routes>
         </main>
       </div>
@@ -83,9 +91,17 @@ function Home() {
 
         <Link to="/faucet" className="card hover:shadow-lg transition-shadow">
           <div className="text-primary-600 text-4xl mb-4">💧</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Faucet (Wallet)</h3>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">Faucet (Mock)</h3>
           <p className="text-gray-600">
-            Connect wallet and claim {5} $NUL tokens with ZK proof
+            Connect wallet and claim {5} $NUL mock tokens (localStorage)
+          </p>
+        </Link>
+
+        <Link to="/faucet-onchain" className="card hover:shadow-lg transition-shadow border-2 border-primary-300">
+          <div className="text-primary-600 text-4xl mb-4">⭐</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">Faucet (On-Chain)</h3>
+          <p className="text-gray-600">
+            Real ERC-20 tokens on Base Sepolia with on-chain verification
           </p>
         </Link>
       </div>

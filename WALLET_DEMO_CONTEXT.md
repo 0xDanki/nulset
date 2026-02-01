@@ -76,15 +76,15 @@ Connect Wallet → Get Address → Check Ban Status
 - Any injected wallet
 
 ### Network Support
-**Primary**: Any EVM-compatible chain (wallet-agnostic)
+**Primary**: Base Sepolia (testnet)
+- Base Sepolia ⭐ (Primary for testing)
+- Base (mainnet)
 - Ethereum Mainnet
-- Base
 - Arbitrum
 - Optimism
 - Polygon
-- Local/Testnet
 
-**Note**: This is a pure client-side demo. No real blockchain transactions occur.
+**Note**: For the hackathon demo, this runs client-side with mock tokens. Future versions will deploy real $NUL tokens on Base Sepolia.
 
 ---
 

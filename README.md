@@ -158,16 +158,47 @@ The system includes test identifiers to demonstrate both success and failure cas
 
 ## Roadmap
 
-**Current Implementation:**
-- Off-chain proof generation and verification
-- Local root storage (JSON file)
-- Manual witness distribution
+**Current Implementation (Phase 1-2):**
+- ✅ Off-chain proof generation and verification
+- ✅ Browser-based tree building with Poseidon hash
+- ✅ Local root storage (localStorage)
+- ✅ Admin panel for ban list management
+- ✅ Client-side ZK proof verification
+- ✅ Deployed demo at [nulset.vercel.app](https://nulset.vercel.app)
 
-**Planned:**
-- Smart contract for root publication and on-chain verification
+**Phase 3: Onchain Integration (In Development)**
+
+### Smart Contract Architecture
+**Merkle Root Registry:**
+- Publish Merkle roots onchain for immutable audit trail
+- Per-platform root management with access control
+- Trustless verification against published roots
+- Event emissions for transparency and indexing
+
+**On-chain Proof Verification:**
+- Groth16 verifier contract (auto-generated from circuit)
+- ~300k gas per proof verification
+- Enables smart contract gating (faucets, DAOs, protocols)
+- Censorship-resistant verification
+
+**Target Deployment:**
+- Base Sepolia (testnet) → Base Mainnet (production)
+- Low gas costs (~$0.05 per root update, ~$0.30 per verification)
+- Fast finality (2 seconds)
+- Ethereum security via OP Stack
+
+### Key Benefits of Onchain
+- **Immutability**: Root history cannot be tampered with
+- **Trustless**: No need to trust platform admins
+- **Composability**: Other contracts can verify proofs
+- **Transparency**: All updates visible on blockchain
+- **Cross-platform**: Shared roots across applications
+
+**Phase 4: Advanced Features**
+- Multi-platform registry and discovery
 - IPFS-based witness distribution
+- Batch root updates and verification
 - Multi-party computation for tree updates
 - Governance mechanism for exclusion set management
-- Identity provider integration
-- Automated witness refresh on root updates
+- Identity provider integration (OAuth, WebAuthn)
 - Proof recursion for larger trees (depth > 32)

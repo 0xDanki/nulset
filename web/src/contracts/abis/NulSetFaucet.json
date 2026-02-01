@@ -1,0 +1,175 @@
+[
+  {
+    "inputs": [
+      {"internalType": "address", "name": "_nulToken", "type": "address"},
+      {"internalType": "address", "name": "_verifier", "type": "address"},
+      {"internalType": "uint256", "name": "_initialRoot", "type": "uint256"}
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "internalType": "address", "name": "user", "type": "address"},
+      {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"},
+      {"indexed": false, "internalType": "uint256", "name": "timestamp", "type": "uint256"},
+      {"indexed": false, "internalType": "uint256", "name": "totalClaims", "type": "uint256"}
+    ],
+    "name": "Claimed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "internalType": "address", "name": "owner", "type": "address"},
+      {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}
+    ],
+    "name": "EmergencyWithdraw",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": false, "internalType": "uint256", "name": "oldRoot", "type": "uint256"},
+      {"indexed": false, "internalType": "uint256", "name": "newRoot", "type": "uint256"},
+      {"indexed": false, "internalType": "uint256", "name": "timestamp", "type": "uint256"}
+    ],
+    "name": "RootUpdated",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "CLAIM_AMOUNT",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "COOLDOWN",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address", "name": "user", "type": "address"}
+    ],
+    "name": "canUserClaim",
+    "outputs": [
+      {"internalType": "bool", "name": "canClaim", "type": "bool"},
+      {"internalType": "uint256", "name": "cooldownRemaining", "type": "uint256"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256[2]", "name": "a", "type": "uint256[2]"},
+      {"internalType": "uint256[2][2]", "name": "b", "type": "uint256[2][2]"},
+      {"internalType": "uint256[2]", "name": "c", "type": "uint256[2]"},
+      {"internalType": "uint256[1]", "name": "input", "type": "uint256[1]"}
+    ],
+    "name": "claim",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "emergencyWithdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getFaucetBalance",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address", "name": "user", "type": "address"}
+    ],
+    "name": "getUserStats",
+    "outputs": [
+      {"internalType": "uint256", "name": "claims", "type": "uint256"},
+      {"internalType": "uint256", "name": "lastClaimTime", "type": "uint256"},
+      {"internalType": "bool", "name": "canClaimNow", "type": "bool"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address", "name": "", "type": "address"}
+    ],
+    "name": "lastClaim",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "merkleRoot",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nulToken",
+    "outputs": [{"internalType": "contract IERC20", "name": "", "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalClaimCount",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "address", "name": "", "type": "address"}
+    ],
+    "name": "totalClaims",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalDistributed",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256", "name": "_newRoot", "type": "uint256"}
+    ],
+    "name": "updateRoot",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "verifier",
+    "outputs": [{"internalType": "contract Groth16Verifier", "name": "", "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
